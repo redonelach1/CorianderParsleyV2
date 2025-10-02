@@ -97,9 +97,9 @@ def create_augmented_dataset(input_dir, output_dir, augmentations_per_image=5, t
         print(f"  Generated {class_augmented} augmented images for {class_name}")
         total_augmented += class_augmented
     
-    print(f"\n✅ Data augmentation complete!")
-    print(f"📊 Total augmented images generated: {total_augmented}")
-    print(f"📁 Augmented dataset saved in: {output_dir}")
+    print(f"\nData augmentation complete!")
+    print(f"Total augmented images generated: {total_augmented}")
+    print(f"Augmented dataset saved in: {output_dir}")
 
 
 def visualize_augmentations(input_dir, class_name, image_index=0, num_augmentations=6):
@@ -188,22 +188,22 @@ if __name__ == "__main__":
     # TARGET_SIZE = (150, 150)  # Smaller size for faster training
     # TARGET_SIZE = (128, 128)  # Fastest training, lower memory
     
-    print("🚀 Starting VGG16-Optimized Data Augmentation Process")
+    print("Starting VGG16-Optimized Data Augmentation Process")
     print("="*55)
     
     # Check if input directory exists
     if not os.path.exists(INPUT_DIR):
-        print(f"❌ Input directory '{INPUT_DIR}' not found!")
+        print(f"Input directory '{INPUT_DIR}' not found!")
         print("Please make sure you're running this script from the correct directory.")
         exit(1)
     
     # Display current configuration
-    print(f"📁 Input directory: {INPUT_DIR}")
-    print(f"📁 Output directory: {OUTPUT_DIR}")
-    print(f"🔄 Augmentations per image: {AUGMENTATIONS_PER_IMAGE}")
-    print(f"📐 Target image size: {TARGET_SIZE} (VGG16 standard)")
-    print(f"🧠 Optimized for: VGG16 Transfer Learning")
-    print(f"🔢 Normalization: Applied during model training")
+    print(f"Input directory: {INPUT_DIR}")
+    print(f"Output directory: {OUTPUT_DIR}")
+    print(f"Augmentations per image: {AUGMENTATIONS_PER_IMAGE}")
+    print(f"Target image size: {TARGET_SIZE} (VGG16 standard)")
+    print(f"Optimized for: VGG16 Transfer Learning")
+    print(f"Normalization: Applied during model training")
     print("="*55)
     
     # Perform data augmentation
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     )
     
     # Optional: Visualize some augmentations
-    print("\n🖼️  Would you like to see a visualization of augmentations?")
+    print("\nWould you like to see a visualization of augmentations?")
     print("Uncomment the lines below to visualize:")
     visualize_augmentations('train', 'coriander', image_index=0)
     visualize_augmentations('train', 'parsely', image_index=0)
