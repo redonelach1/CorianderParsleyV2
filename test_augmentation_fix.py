@@ -23,14 +23,14 @@ def test_single_augmentation():
     # Test with first coriander image
     test_dir = "train/coriander"
     if not os.path.exists(test_dir):
-        print("❌ Test directory not found!")
+        print("Test directory not found!")
         return
     
     image_files = [f for f in os.listdir(test_dir) 
                   if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff'))]
     
     if not image_files:
-        print("❌ No images found in test directory!")
+        print("No images found in test directory!")
         return
     
     # Load first image
@@ -76,7 +76,7 @@ def test_single_augmentation():
     plt.savefig('augmentation_test.png', dpi=150, bbox_inches='tight')
     plt.show()
     
-    print("✅ Test completed! Check 'augmentation_test.png' for results.")
+    print("Test completed! Check 'augmentation_test.png' for results.")
     
     # Test saving functionality
     test_output_dir = "test_aug_output"
@@ -89,7 +89,7 @@ def test_single_augmentation():
     aug_img_pil = array_to_img(augmented_img_fixed)
     aug_img_pil.save(os.path.join(test_output_dir, "augmented_fixed.jpg"))
     
-    print(f"✅ Test images saved in '{test_output_dir}/' directory")
+    print(f"Test images saved in '{test_output_dir}/' directory")
 
 if __name__ == "__main__":
     test_single_augmentation()
