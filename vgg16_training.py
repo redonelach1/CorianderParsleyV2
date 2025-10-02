@@ -33,7 +33,7 @@ class CorianderParsleyClassifier:
     def load_datasets(self, validation_split=0.2):
         """Load and prepare training and validation datasets"""
         
-        print("📁 Loading datasets...")
+        print("Loading datasets...")
         
         # Load training dataset
         self.train_dataset = image_dataset_from_directory(
@@ -59,14 +59,14 @@ class CorianderParsleyClassifier:
         
         # Get class names
         self.class_names = self.train_dataset.class_names
-        print(f"✅ Classes found: {self.class_names}")
+        print(f"Classes found: {self.class_names}")
         
         # Calculate dataset sizes
         train_size = len(list(self.train_dataset.unbatch()))
         val_size = len(list(self.val_dataset.unbatch()))
         
-        print(f"📊 Training samples: {train_size}")
-        print(f"📊 Validation samples: {val_size}")
+        print(f"Training samples: {train_size}")
+        print(f"Validation samples: {val_size}")
         
         # Normalize pixel values to [0,1]
         self.train_dataset = self.train_dataset.map(
@@ -91,7 +91,7 @@ class CorianderParsleyClassifier:
             fine_tune_layers (int): Number of top VGG16 layers to unfreeze for fine-tuning
         """
         
-        print("🧠 Building VGG16 model...")
+        print("Building VGG16 model...")
         
         # Load pre-trained VGG16 model
         base_model = VGG16(
@@ -109,7 +109,7 @@ class CorianderParsleyClassifier:
             # Freeze all layers except the top fine_tune_layers
             for layer in base_model.layers[:-fine_tune_layers]:
                 layer.trainable = False
-            print(f"🔓 Fine-tuning enabled: last {fine_tune_layers} layers unfrozen")
+            print(f"Fine-tuning enabled: last {fine_tune_layers} layers unfrozen")
         
         # Build the complete model
         self.model = models.Sequential([
@@ -131,7 +131,7 @@ class CorianderParsleyClassifier:
             layers.Dense(1, activation='sigmoid')
         ])
         
-        print("✅ Model architecture built")
+        print("Model architecture built")
         self.model.summary()
         
         return self.model
@@ -145,7 +145,7 @@ class CorianderParsleyClassifier:
             metrics=['accuracy', 'precision', 'recall']
         )
         
-        print(f"✅ Model compiled with learning rate: {learning_rate}")
+        print(f"Model compiled with learning rate: {learning_rate}")
     
     def setup_callbacks(self, model_name="coriander_vs_parsely_vgg16"):
         """Setup training callbacks"""
@@ -179,10 +179,10 @@ class CorianderParsleyClassifier:
         
         return callbacks
     
-    def train_model(self, epochs=50, model_name="coriander_vs_parsely_vgg16"):
+    def train_model(self, epochs=5, model_name="coriander_vs_parsely_vgg16"):
         """Train the model"""
         
-        print(f"🚀 Starting training for {epochs} epochs...")
+        print(f"Starting training for {epochs} epochs...")
         print("="*60)
         
         callbacks = self.setup_callbacks(model_name)
@@ -196,14 +196,14 @@ class CorianderParsleyClassifier:
             verbose=1
         )
         
-        print("✅ Training completed!")
+        print("Training completed!")
         
         return self.history
     
     def evaluate_model(self):
         """Evaluate the trained model"""
         
-        print("\n📊 Evaluating model...")
+        print("\nEvaluating model...")
         
         # Evaluate on validation set
         val_loss, val_accuracy, val_precision, val_recall = self.model.evaluate(
@@ -213,7 +213,7 @@ class CorianderParsleyClassifier:
         # Calculate F1 score
         f1_score = 2 * (val_precision * val_recall) / (val_precision + val_recall)
         
-        print(f"📈 Validation Results:")
+        print(f"Validation Results:")
         print(f"   Loss: {val_loss:.4f}")
         print(f"   Accuracy: {val_accuracy:.4f} ({val_accuracy*100:.2f}%)")
         print(f"   Precision: {val_precision:.4f}")
@@ -232,7 +232,7 @@ class CorianderParsleyClassifier:
         """Plot and save training history"""
         
         if self.history is None:
-            print("❌ No training history available. Train the model first.")
+            print("No training history available. Train the model first.")
             return
         
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
@@ -279,7 +279,7 @@ class CorianderParsleyClassifier:
         if save_plots:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             plt.savefig(f'training_history_{timestamp}.png', dpi=300, bbox_inches='tight')
-            print(f"📊 Training plots saved as training_history_{timestamp}.png")
+            print(f"Training plots saved as training_history_{timestamp}.png")
         
         plt.show()
     
@@ -293,7 +293,7 @@ class CorianderParsleyClassifier:
             fine_tune_lr (float): Learning rate for fine-tuning (should be lower)
         """
         
-        print(f"\n🔧 Starting fine-tuning with {fine_tune_layers} unfrozen layers...")
+        print(f"\nStarting fine-tuning with {fine_tune_layers} unfrozen layers...")
         
         # Unfreeze top layers of the base model
         base_model = self.model.layers[0]  # VGG16 base model
@@ -306,7 +306,7 @@ class CorianderParsleyClassifier:
         # Recompile with lower learning rate
         self.compile_model(learning_rate=fine_tune_lr)
         
-        print(f"📚 Trainable layers: {len([l for l in self.model.layers if l.trainable])}")
+        print(f"Trainable layers: {len([l for l in self.model.layers if l.trainable])}")
         
         # Continue training
         fine_tune_history = self.model.fit(
@@ -325,7 +325,7 @@ class CorianderParsleyClassifier:
             for key in self.history.history.keys():
                 self.history.history[key].extend(fine_tune_history.history[key])
         
-        print("✅ Fine-tuning completed!")
+        print("Fine-tuning completed!")
         
         return fine_tune_history
 
@@ -333,12 +333,12 @@ class CorianderParsleyClassifier:
 def main():
     """Main training pipeline"""
     
-    print("🌿 Coriander vs Parsely Classification with VGG16")
+    print("Coriander vs Parsely Classification with VGG16")
     print("="*60)
     
     # Check if augmented dataset exists
     if not os.path.exists("augmented_dataset"):
-        print("❌ Augmented dataset not found!")
+        print("Augmented dataset not found!")
         print("Please run the data augmentation script first.")
         return
     
@@ -357,31 +357,31 @@ def main():
     classifier.compile_model(learning_rate=0.001)  # Higher LR for initial training
     
     # Train model (initial phase)
-    print("\n🚀 Phase 1: Training with frozen VGG16 base...")
-    history1 = classifier.train_model(epochs=30, model_name="coriander_vs_parsely_phase1")
+    print("\nPhase 1: Training with frozen VGG16 base...")
+    history1 = classifier.train_model(epochs=5, model_name="coriander_vs_parsely_phase1")
     
     # Evaluate initial training
-    print("\n📊 Phase 1 Results:")
+    print("\nPhase 1 Results:")
     results1 = classifier.evaluate_model()
     
     # Fine-tune model (optional but recommended)
-    print("\n🔧 Phase 2: Fine-tuning with unfrozen top layers...")
+    print("\nPhase 2: Fine-tuning with unfrozen top layers...")
     history2 = classifier.fine_tune_model(
         fine_tune_layers=4, 
-        fine_tune_epochs=20, 
+        fine_tune_epochs=5, 
         fine_tune_lr=1e-5
     )
     
     # Final evaluation
-    print("\n📊 Final Results:")
+    print("\nFinal Results:")
     final_results = classifier.evaluate_model()
     
     # Plot training history
     classifier.plot_training_history(save_plots=True)
     
-    print("\n🎉 Training pipeline completed!")
-    print(f"📁 Model saved as: coriander_vs_parsely_vgg16_finetuned.h5")
-    print(f"📈 Final accuracy: {final_results['accuracy']*100:.2f}%")
+    print("\nTraining pipeline completed!")
+    print(f"Model saved as: coriander_vs_parsely_vgg16_finetuned.h5")
+    print(f"Final accuracy: {final_results['accuracy']*100:.2f}%")
 
 
 if __name__ == "__main__":

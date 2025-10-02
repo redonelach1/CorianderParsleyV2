@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 
 class CorianderParsleyPredictor:
-    def __init__(self, model_path="coriander_vs_parsely_vgg16_finetuned.h5", img_size=(224, 224)):
+    def __init__(self, model_path="C:/Users/RedNa/OneDrive/Bureau/FatalError/CorianderParsley/coriander_vs_parsely_vgg16_finetuned.h5", img_size=(224, 224)):
         """
         Initialize the predictor with trained model
         
@@ -26,9 +26,9 @@ class CorianderParsleyPredictor:
         """Load the trained model"""
         try:
             self.model = load_model(self.model_path)
-            print(f"✅ Model loaded from: {self.model_path}")
+            print(f"Model loaded from: {self.model_path}")
         except Exception as e:
-            print(f"❌ Error loading model: {e}")
+            print(f"Error loading model: {e}")
             print("Make sure you have trained the model first!")
     
     def preprocess_image(self, image_path):
@@ -55,7 +55,7 @@ class CorianderParsleyPredictor:
             return img_array, img
         
         except Exception as e:
-            print(f"❌ Error preprocessing image {image_path}: {e}")
+            print(f"Error preprocessing image {image_path}: {e}")
             return None, None
     
     def predict_single_image(self, image_path, show_confidence=True):
@@ -97,9 +97,9 @@ class CorianderParsleyPredictor:
         }
         
         if show_confidence:
-            print(f"📷 {os.path.basename(image_path)}")
-            print(f"🔮 Prediction: {predicted_class.upper()}")
-            print(f"📊 Confidence: {confidence*100:.2f}%")
+            print(f"{os.path.basename(image_path)}")
+            print(f"Prediction: {predicted_class.upper()}")
+            print(f"Confidence: {confidence*100:.2f}%")
             print("-" * 40)
         
         return results
@@ -113,7 +113,7 @@ class CorianderParsleyPredictor:
             output_folder (str): Path to save annotated images
         """
         if not os.path.exists(image_folder):
-            print(f"❌ Image folder not found: {image_folder}")
+            print(f"Image folder not found: {image_folder}")
             return
         
         # Create output folder
@@ -125,7 +125,7 @@ class CorianderParsleyPredictor:
                       if f.lower().endswith(image_extensions)]
         
         if not image_files:
-            print("❌ No image files found in the folder!")
+            print("No image files found in the folder!")
             return
         
         print(f"🔍 Found {len(image_files)} images to process...")
@@ -196,7 +196,7 @@ class CorianderParsleyPredictor:
             img_with_text.save(output_path)
             
         except Exception as e:
-            print(f"⚠️ Could not save annotated image: {e}")
+            print(f"Could not save annotated image: {e}")
     
     def print_batch_summary(self, results):
         """Print summary of batch predictions"""
@@ -204,24 +204,24 @@ class CorianderParsleyPredictor:
             return
         
         print("\n" + "="*50)
-        print("📊 PREDICTION SUMMARY")
+        print("PREDICTION SUMMARY")
         print("="*50)
         
         # Count predictions by class
         coriander_count = sum(1 for r in results if r['predicted_class'] == 'coriander')
         parsely_count = sum(1 for r in results if r['predicted_class'] == 'parsely')
         
-        print(f"🌿 Coriander: {coriander_count} images")
-        print(f"🍃 Parsely: {parsely_count} images")
-        print(f"📊 Total: {len(results)} images")
+        print(f"Coriander: {coriander_count} images")
+        print(f"Parsely: {parsely_count} images")
+        print(f"Total: {len(results)} images")
         
         # Average confidence
         avg_confidence = np.mean([r['confidence'] for r in results])
-        print(f"📈 Average confidence: {avg_confidence*100:.2f}%")
+        print(f"Average confidence: {avg_confidence*100:.2f}%")
         
         # High confidence predictions (>90%)
         high_conf = sum(1 for r in results if r['confidence'] > 0.9)
-        print(f"🎯 High confidence (>90%): {high_conf}/{len(results)} ({high_conf/len(results)*100:.1f}%)")
+        print(f"High confidence (>90%): {high_conf}/{len(results)} ({high_conf/len(results)*100:.1f}%)")
     
     def visualize_predictions(self, results, max_images=8):
         """Visualize prediction results in a grid"""
@@ -272,7 +272,7 @@ class CorianderParsleyPredictor:
 def main():
     """Main prediction pipeline"""
     
-    print("🔮 Coriander vs Parsely Predictor")
+    print("Coriander vs Parsely Predictor")
     print("="*40)
     
     # Initialize predictor
@@ -280,28 +280,28 @@ def main():
     
     # Check if model exists
     if predictor.model is None:
-        print("\n❌ No trained model found!")
+        print("\nNo trained model found!")
         print("Please train the model first using vgg16_training.py")
         return
     
     # Example usage
-    test_folder = "test"  # Change this to your test images folder
+    test_folder = "test/testImgs"  # Change this to your test images folder
     
     if os.path.exists(test_folder):
-        print(f"\n🔍 Processing images in: {test_folder}")
+        print(f"\nProcessing images in: {test_folder}")
         results = predictor.predict_batch(test_folder)
         
         # Visualize some results
         if results:
-            print(f"\n🖼️ Visualizing first {min(8, len(results))} predictions...")
+            print(f"\nVisualizing first {min(8, len(results))} predictions...")
             predictor.visualize_predictions(results)
     
     else:
-        print(f"\n⚠️ Test folder '{test_folder}' not found.")
+        print(f"\nTest folder '{test_folder}' not found.")
         print("Please create a test folder with images or modify the test_folder path.")
         
         # Example single prediction
-        print("\n💡 Example usage for single image:")
+        print("\nExample usage for single image:")
         print("predictor.predict_single_image('path/to/your/image.jpg')")
 
 
