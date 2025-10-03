@@ -64,7 +64,7 @@ def download_model():
         return model_filename
     
     # Google Drive file ID (replace with your actual file ID)
-    file_id = "YOUR_GOOGLE_DRIVE_FILE_ID_HERE"
+    file_id = "1ec1hfzYzT89xw3IXCm1bhEIjoSlRVAMB"
     
     if file_id == "YOUR_GOOGLE_DRIVE_FILE_ID_HERE":
         st.error("Please configure the Google Drive file ID in the code!")
