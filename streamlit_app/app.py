@@ -1,11 +1,8 @@
 import streamlit as st
 import tensorflow as tf
-from tensorflow import keras
 from PIL import Image
 import numpy as np
 import os
-import requests
-import gdown
 
 # Configure page
 st.set_page_config(
@@ -53,62 +50,25 @@ st.markdown("""
 # Main header
 st.markdown('<h1 class="main-header">Coriander vs Parsley Classifier</h1>', unsafe_allow_html=True)
 
-# Model download function
-@st.cache_resource
-def download_model():
-    """Download model from Google Drive if not exists"""
-    model_filename = "coriander_vs_parsely_vgg16_finetuned.h5"
-    
-    # Check if model already exists
-    if os.path.exists(model_filename):
-        return model_filename
-    
-    # Google Drive file ID (replace with your actual file ID)
-    file_id = "1ec1hfzYzT89xw3IXCm1bhEIjoSlRVAMB"
-    
-    if file_id == "YOUR_GOOGLE_DRIVE_FILE_ID_HERE":
-        st.error("Please configure the Google Drive file ID in the code!")
-        st.info("""
-        **Setup Instructions:**
-        1. Upload 'coriander_vs_parsely_vgg16_finetuned.h5' to Google Drive
-        2. Right-click → Share → Anyone with the link can view
-        3. Copy the file ID from the shareable link
-        4. Replace 'YOUR_GOOGLE_DRIVE_FILE_ID_HERE' in the code
-        """)
-        return None
-    
-    url = f"https://drive.google.com/uc?id={file_id}"
-    
-    try:
-        with st.spinner("Downloading model file (first time only, ~115MB)..."):
-            progress_placeholder = st.empty()
-            progress_placeholder.info("Starting download...")
-            
-            # Download with gdown
-            gdown.download(url, model_filename, quiet=False)
-            progress_placeholder.success("Model downloaded successfully!")
-        
-        return model_filename
-    except Exception as e:
-        st.error(f"Error downloading model: {str(e)}")
-        st.error("Please check that the Google Drive file is publicly accessible and the file ID is correct.")
-        return None
-
 # Model loading function
 @st.cache_resource
 def load_model():
-    """Load the trained VGG16 model"""
-    # First try to download model if needed
-    model_path = download_model()
+    """Load the trained TensorFlow Lite model"""
+    model_paths = [
+        "coriander_vs_parsely_vgg16_finetuned.tflite",
+        os.path.join(os.path.dirname(__file__), "coriander_vs_parsely_vgg16_finetuned.tflite")
+    ]
     
-    if model_path and os.path.exists(model_path):
-        try:
-            with st.spinner("Loading model..."):
-                model = keras.models.load_model(model_path)
-            return model, model_path
-        except Exception as e:
-            st.error(f"Error loading model: {str(e)}")
-            return None, None
+    for path in model_paths:
+        if os.path.exists(path):
+            try:
+                # Load TensorFlow Lite model
+                interpreter = tf.lite.Interpreter(model_path=path)
+                interpreter.allocate_tensors()
+                return interpreter, path
+            except Exception as e:
+                st.warning(f"Error loading model from {path}: {str(e)}")
+                continue
     
     return None, None
 
@@ -130,12 +90,22 @@ def preprocess_image(image):
     return img_array
 
 # Prediction function
-def predict_herb(model, image):
-    """Make prediction on the uploaded image"""
+def predict_herb(interpreter, image):
+    """Make prediction on the uploaded image using TensorFlow Lite"""
     processed_image = preprocess_image(image)
-    prediction = model.predict(processed_image)
     
-    # Get confidence score
+    # Get input and output details
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    
+    # Set the input tensor
+    interpreter.set_tensor(input_details[0]['index'], processed_image)
+    
+    # Run inference
+    interpreter.invoke()
+    
+    # Get the prediction
+    prediction = interpreter.get_tensor(output_details[0]['index'])
     confidence = float(prediction[0][0])
     
     # Determine class (assuming 0 = coriander, 1 = parsley)
@@ -156,12 +126,11 @@ def main():
     model, model_path = load_model()
     
     if model is None:
-        st.error("Model not found! Please ensure 'coriander_vs_parsely_vgg16_finetuned.h5' is in the project directory.")
+        st.error("Model not found! Please ensure 'coriander_vs_parsely_vgg16_finetuned.tflite' is in the streamlit_app directory.")
         st.info("Expected model locations:")
         st.code("""
-        - ../coriander_vs_parsely_vgg16_finetuned.h5
-        - coriander_vs_parsely_vgg16_finetuned.h5
-        - (parent directory)/coriander_vs_parsely_vgg16_finetuned.h5
+        - coriander_vs_parsely_vgg16_finetuned.tflite
+        - streamlit_app/coriander_vs_parsely_vgg16_finetuned.tflite
         """)
         return
     
