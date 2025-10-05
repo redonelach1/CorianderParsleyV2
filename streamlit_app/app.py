@@ -110,11 +110,11 @@ def predict_herb(interpreter, image):
     
     # Determine class (assuming 0 = coriander, 1 = parsley)
     if confidence > 0.5:
-        herb = "Parsley"
+        herb = "M3dnos"
         confidence_percent = confidence * 100
         css_class = "parsley"
     else:
-        herb = "Coriander"
+        herb = "9zbor"
         confidence_percent = (1 - confidence) * 100
         css_class = "coriander"
     
@@ -182,7 +182,7 @@ def main():
             st.progress(confidence / 100)
             
             # Additional info based on prediction
-            if herb == "Coriander":
+            if herb == "9zbor":
                 st.info("""
                 **Coriander (Cilantro) Facts:**
                 - Also known as cilantro or Chinese parsley
